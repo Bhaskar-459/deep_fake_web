@@ -2,17 +2,19 @@ from flask import Flask, request, jsonify, render_template
 import librosa
 import numpy as np
 import tensorflow as tf
+import os
 
 app = Flask(__name__)
-
-# Load the trained model
-model = tf.keras.models.load_model("resnet50_audio_classifier.keras")
 
 # Define audio parameters (must match the ones used during training)
 SAMPLE_RATE = 16000
 DURATION = 4
 N_MELS = 128
 MAX_TIME_STEPS = 120
+
+# Load the model only when needed
+def load_model():
+    return tf.keras.models.load_model("resnet50_audio_classifier.keras")
 
 def preprocess_audio(file_path):
     """Load an audio file and convert it to a Mel spectrogram."""
@@ -55,17 +57,33 @@ def predict():
     file.save(file_path)
 
     # Preprocess the audio
-    input_data = preprocess_audio(file_path)
+    try:
+        input_data = preprocess_audio(file_path)
+    except Exception as e:
+        return jsonify({"error": f"Error preprocessing audio: {str(e)}"}), 500
 
-    # Make a prediction
-    prediction = model.predict(input_data)
-    predicted_label = np.argmax(prediction)
+    # Load the model and make a prediction
+    try:
+        model = load_model()
+        prediction = model.predict(input_data)
+        predicted_label = np.argmax(prediction)
+        confidence = float(np.max(prediction))  # Confidence score
+    except Exception as e:
+        return jsonify({"error": f"Error making prediction: {str(e)}"}), 500
 
     # Convert label to text
     label_map = {0: "Fake", 1: "Real"}
     result = label_map[predicted_label]
 
-    return jsonify({"prediction": result})
+    # Clean up the temporary file
+    if os.path.exists(file_path):
+        os.remove(file_path)
+
+    # Return prediction and confidence
+    return jsonify({
+        "prediction": result,
+        "confidence": confidence
+    })
 
 if __name__ == "__main__":
-    app.run(debug=True , port = 5001)
+    app.run(debug=True)

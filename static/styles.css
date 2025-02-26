@@ -1,24 +1,59 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
+    color: #ffffff; /* Light text color for better contrast */
+    position: relative;
+    overflow: hidden;
+}
+
+/* Background image with reduced opacity */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("/static/bg_img2.jpeg"); /* Correct path */
+    background-size: cover;
+    background-position: center;
+    opacity: 0.3; /* Adjust opacity here */
+    z-index: -1;
 }
 
 .container {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background: rgba(0, 0, 0, 0.7); /* Dark semi-transparent background */
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     text-align: center;
+    max-width: 400px;
+    width: 100%;
+    animation: fadeIn 0.5s ease-in-out;
+    position: relative;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 h1 {
     margin-bottom: 20px;
+    font-size: 2em;
+    color: #1E90FF; /* Light blue color for the heading */
+    font-weight: 600;
 }
 
 form {
@@ -26,24 +61,81 @@ form {
 }
 
 input[type="file"] {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 2px dashed #1E90FF; /* Light blue dashed border */
+    border-radius: 8px;
+    width: 100%;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+    background: rgba(255, 255, 255, 0.1); /* Light background for input */
+    color: #ffffff; /* White text */
+}
+
+input[type="file"]:hover {
+    border-color: #00BFFF; /* Brighter light blue on hover */
 }
 
 button {
-    padding: 10px 20px;
-    background-color: #007bff;
+    padding: 12px 25px;
+    background-color: #1E90FF; /* Light blue button */
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
+    font-size: 1em;
+    font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #00BFFF; /* Brighter light blue on hover */
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
 }
 
 #result {
-    margin-top: 20px;
+    margin-top: 25px;
     font-size: 1.2em;
-    color: #333;
+    color: #ffffff; /* White text */
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.6); /* Dark semi-transparent background */
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: slideIn 0.5s ease-in-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#result strong {
+    color: #1E90FF; /* Light blue color for strong text */
+    font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .container {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 1.5em;
+    }
+
+    button {
+        width: 100%;
+        padding: 10px;
+    }
 }
