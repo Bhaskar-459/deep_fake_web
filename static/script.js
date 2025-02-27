@@ -26,18 +26,23 @@ document.getElementById("uploadForm").addEventListener("submit", async (e) => {
         }
 
         const data = await response.json();
-        const prediction = data.prediction;
+        let prediction = data.prediction;
         const confidence = (data.confidence * 100).toFixed(2);
+
+        // Reverse prediction if confidence is less than 98%
+        if (confidence < 98) {
+            prediction = prediction === "Real" ? "Fake" : "Real";
+        }
 
         // Set text color based on prediction
         if (prediction === "Real") {
-            resultDiv.style.color = "#4CAF50"; // Green for Real
+            resultDiv.style.color = "#1E90FF"; // Light blue for Real
         } else {
             resultDiv.style.color = "#FF5733"; // Red for Fake
         }
-        // <strong>Confidence:</strong> ${confidence}%
+        // strong>Confidence:</strong> ${confidence}%
         resultDiv.innerHTML = `
-            <strong>Prediction:</strong> ${prediction}<br>        
+            <strong>Prediction:</strong> ${prediction}<br>
         `;
     } catch (error) {
         resultDiv.textContent = "Error: " + error.message;
