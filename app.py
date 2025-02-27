@@ -67,7 +67,7 @@ def predict():
         model = load_model()
         prediction = model.predict(input_data)
         predicted_label = np.argmax(prediction)
-        confidence = float(np.max(prediction))  # Confidence score
+        confidence = float(np.max(prediction))
     except Exception as e:
         return jsonify({"error": f"Error making prediction: {str(e)}"}), 500
 
@@ -79,11 +79,9 @@ def predict():
     if os.path.exists(file_path):
         os.remove(file_path)
 
-    # Return prediction and confidence
-    return jsonify({
-        "prediction": result,
-        "confidence": confidence
-    })
+    return jsonify({"prediction": result, "confidence": confidence})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Bind to 0.0.0.0 and use the port specified by Render
+    port = int(os.environ.get("PORT", 10000))  # Default to 10000 if PORT is not set
+    app.run(host="0.0.0.0", port=port, debug=False)
