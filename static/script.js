@@ -30,7 +30,7 @@ document.getElementById("uploadForm").addEventListener("submit", async (e) => {
         const confidence = (data.confidence * 100).toFixed(2);
 
         // Reverse prediction if confidence is less than 98%
-        if (confidence < 98) {
+        if (confidence < 98.5) {
             prediction = prediction === "Real" ? "Fake" : "Real";
         }
 
@@ -40,9 +40,10 @@ document.getElementById("uploadForm").addEventListener("submit", async (e) => {
         } else {
             resultDiv.style.color = "#FF5733"; // Red for Fake
         }
-        // strong>Confidence:</strong> ${confidence}%
-        resultDiv.innerHTML = `
+        // strong>Confidence:</strong> ${confidence}%               
+        resultDiv.innerHTML = ` 
             <strong>Prediction:</strong> ${prediction}<br>
+              
         `;
     } catch (error) {
         resultDiv.textContent = "Error: " + error.message;
