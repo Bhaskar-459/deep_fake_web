@@ -3,7 +3,6 @@ import librosa
 import numpy as np
 import tensorflow as tf
 import os
-from pydub import AudioSegment  # For audio format conversion
 
 app = Flask(__name__)
 
@@ -16,16 +15,6 @@ MAX_TIME_STEPS = 120
 # Load the model only when needed
 def load_model():
     return tf.keras.models.load_model("resnet50_audio_classifier.keras")
-
-def convert_to_flac(file_path, output_path):
-    """Convert any audio file to FLAC format using pydub."""
-    try:
-        audio = AudioSegment.from_file(file_path)
-        audio.export(output_path, format="flac")
-        return True
-    except Exception as e:
-        print(f"Error converting file to FLAC: {str(e)}")
-        return False
 
 def preprocess_audio(file_path):
     """Load an audio file and convert it to a Mel spectrogram."""
@@ -67,14 +56,9 @@ def predict():
     temp_file_path = "temp_audio." + file.filename.split(".")[-1]  # Preserve original extension
     file.save(temp_file_path)
 
-    # Convert the uploaded file to FLAC
-    flac_file_path = "temp_audio.flac"
-    if not convert_to_flac(temp_file_path, flac_file_path):
-        return jsonify({"error": "Failed to convert audio file to FLAC"}), 500
-
     # Preprocess the audio
     try:
-        input_data = preprocess_audio(flac_file_path)
+        input_data = preprocess_audio(temp_file_path)
     except Exception as e:
         return jsonify({"error": f"Error preprocessing audio: {str(e)}"}), 500
 
@@ -91,10 +75,9 @@ def predict():
     label_map = {0: "Fake", 1: "Real"}
     result = label_map[predicted_label]
 
-    # Clean up the temporary files
-    for file_path in [temp_file_path, flac_file_path]:
-        if os.path.exists(file_path):
-            os.remove(file_path)
+    # Clean up the temporary file
+    if os.path.exists(temp_file_path):
+        os.remove(temp_file_path)
 
     return jsonify({"prediction": result, "confidence": confidence})
 
